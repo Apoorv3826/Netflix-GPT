@@ -1,4 +1,3 @@
-import React from "react";
 import MovieCard from "./MovieCard";
 
 const MovieList = ({ title, movies = [] }) => {
@@ -12,9 +11,11 @@ const MovieList = ({ title, movies = [] }) => {
           {movies.length === 0 ? (
             <p className="text-white">No movies available</p>
           ) : (
-            movies.map((movie) => (
-              <MovieCard key={movie.id} posterPath={movie.poster_path} />
-            ))
+            movies
+              .filter((movie) => movie.Poster) // Filter movies that have a poster
+              .map((movie) => (
+                <MovieCard key={movie.imdbID} posterPath={movie.Poster} />
+              ))
           )}
         </div>
       </div>

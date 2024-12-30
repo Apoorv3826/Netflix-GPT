@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import MovieList from "./MovieList";
 import { useSelector } from "react-redux";
 

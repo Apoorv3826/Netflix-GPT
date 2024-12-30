@@ -1,6 +1,5 @@
 import React, { useRef } from "react";
 import model from "../utils/gemini";
-import { API_OPTIONS } from "../utils/constants";
 import { useDispatch } from "react-redux";
 import { addGptMovies } from "../utils/gptSlice";
 
@@ -8,16 +7,15 @@ const GptSearchBar = () => {
   const searchText = useRef(null);
   const dispatch = useDispatch();
 
-  const searchMovieTMDB = async (movie) => {
+  const searchMovieOMDb = async (movie) => {
     const data = await fetch(
-      "https://api.themoviedb.org/3/search/movie?query=" +
-        movie +
-        "&include_adult=false&language=en-US&page=1",
-      API_OPTIONS
+      `http://www.omdbapi.com/?s=${movie}&apikey=a738727a`
     );
-
     const json = await data.json();
-    return json.results;
+    console.log(json);
+
+    // Return the Search array if the response is successful
+    return json.Response === "True" ? json.Search : [];
   };
 
   const handleSearchClick = async () => {
@@ -32,9 +30,13 @@ const GptSearchBar = () => {
     const geminiMovies =
       result.response.candidates[0].content.parts[0].text.split(",");
 
-    const promiseArray = geminiMovies.map((movie) => searchMovieTMDB(movie));
+    // Fetch movie data for each movie name from OMDb
+    const promiseArray = geminiMovies.map((movie) =>
+      searchMovieOMDb(movie.trim())
+    );
     const movieData = await Promise.all(promiseArray);
 
+    // Dispatch the movie names and their corresponding results to Redux store
     dispatch(
       addGptMovies({ movieNames: geminiMovies, movieResults: movieData })
     );

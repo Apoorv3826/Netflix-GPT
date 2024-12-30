@@ -1,22 +1,61 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { addUpcomingMovies } from "../utils/moviesSlice";
-import { API_OPTIONS } from "../utils/constants";
 
 const useUpcomingMovies = () => {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
+
   const getUpcomingMovies = async () => {
-    const data = await fetch(
-      "https://api.themoviedb.org/3/movie/upcoming?page=1",
-      API_OPTIONS
-    );
-    const jsonData = await data.json();
-    dispatch(addUpcomingMovies(jsonData.results));
+    const searchQueries = [
+      "action",
+      "comedy",
+      "thriller",
+      "horror",
+      "drama",
+      "popular",
+      "2023",
+      "new releases",
+      "adventure",
+      "sci-fi",
+    ];
+
+    const randomQuery =
+      searchQueries[Math.floor(Math.random() * searchQueries.length)];
+
+    const apiKey = process.env.REACT_APP_OMDB_API_KEY;
+
+    try {
+      const data = await fetch(
+        `https://www.omdbapi.com/?s=${randomQuery}&apikey=${apiKey}`
+      );
+
+      const jsonData = await data.json();
+
+      if (jsonData.Response === "True") {
+        const movies = jsonData.Search.filter(
+          (movie) => movie.Type === "movie"
+        );
+        dispatch(addUpcomingMovies(movies));
+      } else {
+        console.error("No movies found for query:", randomQuery);
+      }
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     getUpcomingMovies();
   }, []);
+
+  if (loading) {
+    return <p>Loading upcoming movies...</p>;
+  }
+
+  return null;
 };
 
 export default useUpcomingMovies;

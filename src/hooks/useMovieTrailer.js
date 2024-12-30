@@ -1,38 +1,33 @@
 import { useDispatch } from "react-redux";
-import { API_OPTIONS } from "../utils/constants";
 import { addTrailerVideo } from "../utils/moviesSlice";
 import { useEffect } from "react";
 
-const useMovieTrailer = (movieId) => {
+const useMovieTrailer = (imdbID) => {
   const dispatch = useDispatch();
 
-  const getMovieVideos = async () => {
-    try {
-      const response = await fetch(
-        `https://api.themoviedb.org/3/movie/${movieId}/videos?language=en-US`,
-        API_OPTIONS
-      );
-
-      const jsonData = await response.json();
-
-      // Filter trailers by type
-      const filterData = jsonData.results.filter(
-        (video) => video.type === "Trailer"
-      );
-
-      // Select the first trailer or set a fallback
-      const trailer = filterData[0] || null; // Use `null` if no trailer is found
-
-      dispatch(addTrailerVideo(trailer));
-    } catch (error) {
-      console.error("Error fetching trailer:", error);
-      dispatch(addTrailerVideo(null)); // Dispatch null on error
-    }
-  };
-
   useEffect(() => {
-    getMovieVideos();
-  }, []);
+    const getMovieTrailer = async () => {
+      const apiKey = process.env.REACT_APP_YOUTUBE_API_KEY; // YouTube API Key
+
+      try {
+        const response = await fetch(
+          `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${imdbID} trailer&type=video&key=${apiKey}`
+        );
+
+        const jsonData = await response.json();
+
+        const trailer = jsonData.items[0]?.id?.videoId || null;
+        dispatch(addTrailerVideo(trailer)); // Dispatch the trailer data
+      } catch (error) {
+        console.error("Error fetching trailer:", error);
+        dispatch(addTrailerVideo(null));
+      }
+    };
+
+    if (imdbID) {
+      getMovieTrailer();
+    }
+  }, [imdbID, dispatch]);
 };
 
 export default useMovieTrailer;

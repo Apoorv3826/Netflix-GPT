@@ -1,5 +1,3 @@
-import React from "react";
-
 const VideoTitle = ({ title, overview }) => {
   return (
     <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-center bg-gradient-to-r from-black to-transparent text-white p-4 md:p-8 lg:p-16">

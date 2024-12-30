@@ -1,4 +1,3 @@
-import React from "react";
 import MovieList from "./MovieList";
 import { useSelector } from "react-redux";
 
@@ -12,9 +11,9 @@ const GptMovieSuggestion = () => {
         <div className="p-6 space-y-8">
           {movieNames.map((movieName, index) => (
             <MovieList
-              key={movieName}
-              title={movieName}
-              movies={movieResults[index]}
+              key={movieName.trim()}
+              title={movieName.trim()}
+              movies={movieResults[index] || []}
             />
           ))}
         </div>
