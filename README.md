@@ -76,8 +76,8 @@
 
 ---
 
-## 🌐 Live Demo  
+## 🌐 Live Website 
 
-Explore Netflix GPT in action: [**Demo Link**](#)  
+Explore Netflix GPT in action: [**Link**](https://apoorv-netf-gpt.netlify.app/)  
 
 ---
